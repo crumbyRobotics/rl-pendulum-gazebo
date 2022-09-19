@@ -5,3 +5,8 @@
 - libxcursor-dev
 - libxi-dev
 - libglfw3-dev
+
+## MuJoCo API
+### GLFW
+- 3D visualization using OpenGL (GLFW3)
+- Need to program the UI of simulation using GLFW3 library
