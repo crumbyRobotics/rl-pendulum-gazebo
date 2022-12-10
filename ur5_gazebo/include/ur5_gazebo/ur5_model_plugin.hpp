@@ -5,7 +5,8 @@
 #include <gazebo/physics/physics.hh>
 
 #include <ros/ros.h>
-#include <std_msgs/Float32.h>
+#include <ur5_msgs/Action.h>
+#include <ur5_msgs/State.h>
 
 struct UR5ModelPlugin : public gazebo::ModelPlugin {
     UR5ModelPlugin()
@@ -19,7 +20,7 @@ struct UR5ModelPlugin : public gazebo::ModelPlugin {
         if (sdf->HasElement("topic_name")) {
             topic_name = sdf->GetElement("topic_name")->Get<std::string>();
         } else {
-            topic_name = "cmd_action";
+            topic_name = "ur5_action";
         }
 
         model = _model;
@@ -29,28 +30,28 @@ struct UR5ModelPlugin : public gazebo::ModelPlugin {
         update_conn = gazebo::event::Events::ConnectWorldUpdateBegin(
             std::bind(&UR5ModelPlugin::onUpdate, this));
 
-        state_pub = nh.advertise<std_msgs::Float32>("pendulum_state", 1000);
+        state_pub = nh.advertise<ur5_msgs::State>("ur5_state", 1000);
         action_sub = nh.subscribe(topic_name, 10, &UR5ModelPlugin::actionCallback, this);
     }
 
     void onUpdate()
     {
-        state.data = hinge1->Position(0);
+        state.angle1 = hinge1->Position(0);
 
-        hinge1->SetForce(0, action.data);
+        hinge1->SetForce(0, action.torque1);
 
         state_pub.publish(state);
         ros::spinOnce();
     }
 
-    void actionCallback(const std_msgs::Float32& _action)
+    void actionCallback(const ur5_msgs::Action& _action)
     {
         action = _action;
     }
 
 
-    std_msgs::Float32 state;
-    std_msgs::Float32 action;
+    ur5_msgs::State state;
+    ur5_msgs::Action action;
 
 private:
     gazebo::physics::ModelPtr model;

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ur5_msgs</name>
+  <version>0.0.0</version>
+  <description>The ur5_msgs package</description>
+  <maintainer email="ryo@todo.todo">ryo</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>message_generation</build_depend>
+
+  <exec_depend>message_runtime</exec_depend>
+</package>

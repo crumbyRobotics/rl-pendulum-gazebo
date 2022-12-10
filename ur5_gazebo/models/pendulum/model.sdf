@@ -76,7 +76,7 @@
         </joint>
 
         <plugin name="ur5_model_plugin" filename="libur5_model_plugin.so">
-            <topic_name>cmd_action</topic_name>
+            <topic_name>ur5_action</topic_name>
         </plugin>
     </model>  
 </sdf>
