@@ -10,8 +10,7 @@
 
 struct UR5ModelPlugin : public gazebo::ModelPlugin {
     UR5ModelPlugin()
-        : gazebo::ModelPlugin::ModelPlugin(),
-          nh()
+        : gazebo::ModelPlugin::ModelPlugin()
     {
     }
 
@@ -23,8 +22,14 @@ struct UR5ModelPlugin : public gazebo::ModelPlugin {
             topic_name = "ur5_action";
         }
 
+        std::cout << "Loading Model..." << std::endl;
+        std::cout << "Model Name: " << _model->GetName() << std::endl;
+
         model = _model;
 
+        for (const auto& j : model->GetJoints()) {
+            std::cout << "Joint Name: " << j->GetName() << std::endl;
+        }
         hinge1 = model->GetJoint("hinge1");
 
         update_conn = gazebo::event::Events::ConnectWorldUpdateBegin(
@@ -41,6 +46,7 @@ struct UR5ModelPlugin : public gazebo::ModelPlugin {
         hinge1->SetForce(0, action.torque1);
 
         state_pub.publish(state);
+
         ros::spinOnce();
     }
 

@@ -2,7 +2,7 @@
 <sdf version='1.6'>
     <model name="pendulum">
         <static>false</static>
-        <link name='base'>
+        <link name='base_link'>
             <inertial>
                 <mass>10</mass>
                 <inertia> 
@@ -60,23 +60,71 @@
             </visual>
         </link>
 
+        <link name='camera_link'>
+            <pose>0 1 0.25 0 -0 -1.5708</pose>
+            <visual name='visual'>
+                <geometry>
+                    <box>
+                        <size>0.1 0.1 0.1</size>
+                    </box>
+                </geometry>
+            </visual>
+            <sensor name='my_camera' type='camera'>
+                <camera>
+                    <save enabled="false">
+                        <path>/home/ryo/Desktop/camera_images</path>
+                    </save>
+                    <horizontal_fov>1.047</horizontal_fov>
+                    <image>
+                        <width>960</width>
+                        <height>540</height>
+                    </image>
+                    <clip>
+                        <near>0.1</near>
+                        <far>100</far>
+                    </clip>
+                </camera>
+                <update_rate>30</update_rate>
+                <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                    <alwaysOn>true</alwaysOn>
+                    <updateRate>0.0</updateRate>
+                    <cameraName>ur5/camera1</cameraName>
+                    <imageTopicName>image_raw</imageTopicName>
+                    <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+                    <frameName>camera_link</frameName>
+                    <hackBaseline>0.07</hackBaseline>
+                    <distortionK1>0.0</distortionK1>
+                    <distortionK2>0.0</distortionK2>
+                    <distortionK3>0.0</distortionK3>
+                    <distortionT1>0.0</distortionT1>
+                    <distortionT2>0.0</distortionT2>
+                </plugin>
+            </sensor>
+        </link>
+
         <joint type="revolute" name="hinge1">
             <pose>0 0 -0.15 0 0 0</pose>
             <child>link1</child>
-            <parent>base</parent>
+            <parent>base_link</parent>
             <axis>
                 <xyz>0 1 0</xyz>
             </axis>
         </joint>
         
-        <joint type="fixed" name="fix">
+        <joint type="fixed" name="base_fix">
             <pose>0 0 0 0 0 0</pose>
-            <child>base</child>
+            <child>base_link</child>
+            <parent>world</parent>
+        </joint>
+
+        <joint type="fixed" name="camera_fix">
+            <pose>0 0 0 0 0 0</pose>
+            <child>camera_link</child>
             <parent>world</parent>
         </joint>
 
         <plugin name="ur5_model_plugin" filename="libur5_model_plugin.so">
             <topic_name>ur5_action</topic_name>
         </plugin>
-    </model>  
+    </model>
 </sdf>
