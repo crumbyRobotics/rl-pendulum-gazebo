@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from cmath import isnan
 import time
 import torch
@@ -30,7 +31,7 @@ def train():
     target_entropy = -1 * env.action_space.shape[0]  # エントロピーαの目標値: -1xアクション数がいいらしい
 
     state_dim = 50  # 画像から抽出される特徴量の次元
-    obs_shape = [3, 3, 100, 100]  # torch.stack([torch.cat([get_screen(), get_screen(), get_screen()])]).shape
+    obs_shape = torch.stack([torch.cat([env.get_obs(), env.get_obs(), env.get_obs()])]).shape  # [1, 3, 3, 40, 92]
     num_layers = 2
     num_filters = 32
     decoder_latent_lambda = 0.0
@@ -48,11 +49,12 @@ def train():
 
     # 学習ループ
     for episode in range(5000):
+        env.reset()  # gazeboをリセット
         obs, reward, done = env.update()   # 初期状態を取得
         prev_obs = obs
         prev_prev_obs = obs
         state = torch.stack([torch.cat([prev_prev_obs, prev_obs, obs])])
-        action = 0  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        action = 0
         total_reward = 0
 
         step = 0
@@ -98,9 +100,8 @@ def train():
             if isnan(env_action[0]):
                 print("action is NaN. 学習失敗.")
                 break
-            # print("state:", state, "action:", action)
 
-            env.step(env_action)  # action_pub.publish(env_action)
+            env.step(env_action)
 
             # 前回・前々回のstateを保存
             prev_prev_obs = prev_obs
@@ -116,18 +117,16 @@ def train():
             history_metrics.append(np.mean(metrics_list, axis=0))  # 平均を保存
             history_metrics_y.append(episode)
 
-        #--- print
+        # --- print
         interval = 5
         if episode % interval == 0:
-            print("{} (min,ave,max)reward {:.1f} {:.1f} {:.1f}, alpha={:.3f}".format(
+            print("{} (min,ave,max)reward {} {} {}, alpha={}".format(
                 episode,
-                min(history_rewards[-interval:]),
+                np.min(history_rewards[-interval:]),
                 np.mean(history_rewards[-interval:]),
-                max(history_rewards[-interval:]),
-                torch.exp(sac.log_alpha).cpu().detach().numpy()[0],
+                np.max(history_rewards[-interval:]),
+                torch.exp(sac.log_alpha).cpu().detach().numpy()[0]
             ))
-
-        env.reset()
 
 
 if __name__ == '__main__':

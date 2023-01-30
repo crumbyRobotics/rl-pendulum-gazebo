@@ -28,6 +28,12 @@
                         <size>.3 .3 .1</size>
                     </box>
                 </geometry>
+                <material>
+                    <ambient>0.7 0.1 0.1 1</ambient>
+                    <diffuse>0.1 0.1 0.2 1</diffuse>
+                    <specular>0 0 0 0</specular>
+                    <emissive>0 0 0 1</emissive>
+                </material>
             </visual>
         </link>
 

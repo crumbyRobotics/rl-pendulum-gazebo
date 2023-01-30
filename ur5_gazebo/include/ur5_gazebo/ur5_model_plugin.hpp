@@ -42,6 +42,7 @@ struct UR5ModelPlugin : public gazebo::ModelPlugin {
     void onUpdate()
     {
         state.angle1 = hinge1->Position(0);
+        state.angularvel1 = hinge1->GetVelocity(0);
 
         hinge1->SetForce(0, action.torque1);
 

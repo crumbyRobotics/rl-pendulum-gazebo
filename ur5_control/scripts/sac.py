@@ -1,6 +1,8 @@
 import random
 from collections import namedtuple
 
+import numpy as np
+
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
@@ -117,13 +119,13 @@ class SAC():
         transitions = self.replay_memory.sample(batch_size)
         batch = Transition(*zip(*transitions))
 
-        obs_batch = torch.cat(batch.state)
-        action_batch = torch.cat(batch.action)
-        n_obs_batch = torch.cat(batch.next_state)
-        reward_batch = torch.cat(batch.reward)
-        done_batch = torch.cat(batch.done)
+        obs_batch = torch.cat(batch.state).to(self.device)
+        action_batch = torch.cat(batch.action).to(self.device)
+        n_obs_batch = torch.cat(batch.next_state).to(self.device)
+        reward_batch = torch.cat(batch.reward).to(self.device)
+        done_batch = torch.cat(batch.done).to(self.device)
 
-        alpha = torch.exp(self.log_alpha)
+        alpha = torch.exp(self.log_alpha).to(self.device)
 
         # Q(s,a)の推定値を計算し, Q値の損失関数を計算
         with torch.no_grad():
